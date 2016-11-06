@@ -136,6 +136,29 @@ enum PRODUCTIONMODE
     BACKTEST = 2        // 回测模式
 };
 
+// 证券行情K线类型
+enum KDATATYPE
+{
+    KDATA_1M = 0,       // 1分钟K线
+    KDATA_5M = 1,       // 5分钟K线
+    KDATA_1D = 2        // 1日K线
+
+};
+
+// 证券行情数据(K线数据)
+struct TSecuKMktData
+{
+    QDate   tmDate;     // 日期
+    QTime   tmTime;     // 时间
+    QString SecuCode;   // 证券代码
+    double  Open;       // 开盘价
+    double  High;       // 最高价
+    double  Low;        // 最低价
+    double  Close;      // 收盘价
+    double  Vol;        // 成交量（股）
+    double  Amount;     // 成交金额（元）
+};
+
 }
 
 #endif // DATASTRUCTDEF_H
