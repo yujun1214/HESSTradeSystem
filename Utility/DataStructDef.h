@@ -136,6 +136,14 @@ enum PRODUCTIONMODE
     BACKTEST = 2        // 回测模式
 };
 
+// 行情处理类型
+enum MKTDATAHANDLERTYPE
+{
+    MARKETDATA_HANDLER = 0,
+    ORDER_HANDLER = 1,
+    TRADE_HANDLER = 2
+};
+
 // 证券行情K线类型
 enum KDATATYPE
 {

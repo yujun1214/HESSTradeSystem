@@ -129,37 +129,6 @@ signals:
     // the signal of OnRtnForQuoteRsp
     void sigRtnForQuoteRsp(CThostFtdcForQuoteRspField ForQuoteRsp);
 
-    // the signal of distributing mkt data done
-//    void sigDistributeMktDataDone();
-
-    // the signal of replaying mkt data completed today(for backtest)
-    void sigMktDataReplayCompleted();
-
-    // slots for backtest
-public slots:
-    // slot of RegisterFront
-    void OnRegisterFront();
-
-    // slot of SubscribeMktData，暂不支持盘中订阅
-    void OnSubscribeMktData(char *ppInstrumentID[],int nCount);
-
-    // slot of UnSubscribeMktData
-    void OnUnSubscribeMktData(char *ppInstrumentID[],int nCount);
-
-    // slot of user login
-    void OnUserLogin(int nRequestID);
-
-    // slot of user logout
-    void OnUserLogout(int nRequestID);
-
-    // distribute the mkt data
-    void OnDistributeMktData();
-
-    // 行情播放相关的初始化
-    // 加载已订阅行情合约当天的tick数据至m_ptrDepthMktData
-    // 行情播放的位置索引重置为0，行情播放时间设置为行情数据中最小时间
-    void InitMktDataReplay(QDate tmTradingDay);
-
 private:
 
     CThostFtdcMdApi *m_pUserApi;    // a pointer to CThostFtdcMdApi instance
@@ -189,18 +158,6 @@ private:
 
     // convert CThostFtdcSpecificInstrumentField* to CThostFtdcSpecificInstrumentField
     CThostFtdcDepthMarketDataField DeepCpyCThostFtdcDepthMarketDataField(const CThostFtdcDepthMarketDataField* pDepthMarketData) const;
-
-    // 已订阅合约的深度行情数据（仅保存一天的数据，每天初始化），用于backtest
-    QMap<QString,QVector<CThostFtdcDepthMarketDataField>*> *m_ptrDepthMktData;
-    // 订阅合约行情播放的位置索引
-    QMap<QString,int> m_mpReplayIndex;
-    // 当前播放行情对应的时间
-    TThostFtdcTimeType m_szMktReplayTime;
-
-    // 加载已订阅行情合约指定日期的tick数据(for backtest)
-    void LoadMktData(QDate tmTradingDay);
-    // tick数据所在的文件夹路径
-    QString m_strTickDataDir;
 
 };
 

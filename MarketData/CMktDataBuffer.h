@@ -20,7 +20,7 @@ class CMktDataBuffer
 {
 public:
     // 构造函数
-    CMktDataBuffer():m_nObserverNumHandledMktData(0){}
+    CMktDataBuffer(){}
 
     // 析构函数
     virtual ~CMktDataBuffer(){}
@@ -36,19 +36,11 @@ public:
 
     // 添加金融工具代码至代码缓冲区
 
-    // add mkt data observer(for backtest)
-    void addObserver();
-
 protected:
     // 代码表缓冲区<HESSCode,CodeTableField>
 
     // read write lock
     mutable QReadWriteLock m_lock;
-
-    // mkt data observer number(for backtest)
-    int m_nObserverNum;
-    // num of observer whick has handled the mkt data
-    int m_nObserverNumHandledMktData;
 
 };
 
@@ -85,20 +77,9 @@ public slots:
 
     void setDepthMktData(const CThostFtdcDepthMarketDataField &tMktData);
 
-    // slots for backtest
-    // 对行情观察者处理完深度行情后的响应
-    void ObserverHandleMktDataDone();
-
 signals:
     // 行情更新完毕
     void mktDataUpdated(QString _strSecuCode);
-
-    // 本次行情更新的时间(for backtest)
-    void sigMktDataUpdateTime(QTime _updatetime);
-
-    // signals for backtest
-    // signal of ready to receive mkt data
-    void sigReadyToReceiveMktData();
 
 private:
     // 衍生品行情缓冲区

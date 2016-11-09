@@ -296,7 +296,7 @@ signals:
 
     // signal of settlement info confirm
     // ptrSttlInfoConfirm在堆中创建，由接受signal的slot负责释放内存
-    void sigSettlementInfoConfirm(CThostFtdcSettlementInfoConfirmField *ptrSttlInfoConfirm,int nRequestID);
+//    void sigSettlementInfoConfirm(CThostFtdcSettlementInfoConfirmField *ptrSttlInfoConfirm,int nRequestID);
 };
 
 }

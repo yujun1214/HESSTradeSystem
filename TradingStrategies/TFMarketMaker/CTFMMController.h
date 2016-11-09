@@ -36,29 +36,6 @@ private:
     QThread* ptrLogSysTrd;
 };
 
-class CTFMMControllerForBackTest : public QObject
-{
-    Q_OBJECT
-
-public:
-    CTFMMControllerForBackTest();
-
-    ~CTFMMControllerForBackTest();
-
-private:
-    CMktDistributorApi* ptrCTPMDApi;
-    CCTPMdSpi* ptrCTPMDSpi;
-
-    CTradeMatchApi* ptrCTPTraderApi;
-    CCTPTraderSpi* ptrCTPTraderSpi;
-
-    CTimeController* ptrTimeController;
-    QList<QThread*> lstTFMMWorkerThreads;
-    QThread* ptrDispatcherTrd;
-    QThread* ptrMktBufferTrd;
-    QThread* ptrLogSysTrd;
-};
-
 }
 
 #endif // CTFMMCONTROLLER_H

@@ -8,6 +8,7 @@
 #include "CTP/inc/ThostFtdcTraderApi.h"
 #include <QVector>
 #include "Utility/CTimeController.h"
+#include "Utility/DataStructDef.h"
 
 namespace HESS
 {
@@ -124,7 +125,9 @@ private:
         // 已发出平仓委托
         SENDEDLIQUIDATIONORDER = 4,
         // 已发出平仓委托撤单请求，平仓委托撤单一般是为了撤单后进行止损
-        SENDEDCANCELLIQUIDATIONORDER = 5
+        SENDEDCANCELLIQUIDATIONORDER = 5,
+        // 已发出止损委托
+        SENDEDSTOPLOSSORDER = 6
     };
     // trading status
     MMTRADINGSTATUS m_eTradingStatus;
@@ -175,6 +178,7 @@ private:
     void sendMktPriceOrder(TThostFtdcDirectionType _chDirection,
                            TThostFtdcOffsetFlagType _chOpenClose,int _nvol) const;
 
+
 // 信号、槽，对行情、成交回报推送进行响应
 public slots:
     // 处理行情更新（如止盈、止损），需判断代码是否一致
@@ -209,8 +213,6 @@ signals:
     // 输出日志到控制台
     void sigToConsole(QString _loginfo);
 
-    // 行情处理完毕(for backtest)
-    void sigHandleMktDataDone();
 };
 
 }

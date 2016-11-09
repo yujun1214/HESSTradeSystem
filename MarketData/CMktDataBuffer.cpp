@@ -2,16 +2,10 @@
 #include <QWriteLocker>
 #include "CMktDataBuffer.h"
 #include <iostream>
+#include "Utility/CLogSys.h"
 
 namespace HESS
 {
-
-// add mkt data observer(for backtest)
-void CMktDataBuffer::addObserver()
-{
-    QWriteLocker locker(&m_lock);
-    ++m_nObserverNum;
-}
 
 // 定义CDerivativeMktDataBuffer的静态实例
 CDerivativeMktDataBuffer* CDerivativeMktDataBuffer::m_ptrMktDataBufferInst = nullptr;
@@ -73,8 +67,6 @@ void CDerivativeMktDataBuffer::init(QStringList lstInstrCode)
             addBuffer(*it);
     }
 
-    // 针对backtest，还应将m_nObserverNumHandledMktData变量设置为0
-    m_nObserverNumHandledMktData = 0;
 }
 
 // 为指定的衍生品开辟行情缓冲区
@@ -128,6 +120,11 @@ void CDerivativeMktDataBuffer::setDepthMktData(const CThostFtdcDepthMarketDataFi
 {
     QWriteLocker locker(&m_lock);
 
+//    CLogSys::getLogSysInstance()->toConsole(QString("MktTime = %1").arg(QString(tMktData.UpdateTime)));
+//    if(strcmp(tMktData.UpdateTime,"13:25:28") == 0)
+//    {
+//        std::cout << "binggo." << std::endl;
+//    }
     QString strInstrumentID = QString(tMktData.InstrumentID);
     // 如果该衍生品不在行情缓冲区内，那么先开辟该衍生品的行情缓冲区
     if(!m_mpMktDataBuffer.contains(strInstrumentID))
@@ -137,9 +134,6 @@ void CDerivativeMktDataBuffer::setDepthMktData(const CThostFtdcDepthMarketDataFi
 
 //    std::cout << "Mkt data updated, code=" << tMktData.InstrumentID << ", last price=" << tMktData.LastPrice << std::endl;
     emit mktDataUpdated(strInstrumentID);
-
-    QTime tmUpdateTime = QTime::fromString(QString(tMktData.UpdateTime),"hh:mm:ss");
-    emit sigMktDataUpdateTime(tmUpdateTime);
 }
 
 // 取得深度行情数据
@@ -166,17 +160,6 @@ SimpleDerivMktDataField CDerivativeMktDataBuffer::getSimpleMktData(QString strIn
     tMktData.BidPrice = ptrDepthMktData->BidPrice[0];
     tMktData.BidVol = ptrDepthMktData->BidVol[0];
     return tMktData;
-}
-
-// 对行情观察者处理完深度行情后的响应(for backtest)
-void CDerivativeMktDataBuffer::ObserverHandleMktDataDone()
-{
-    QWriteLocker locker(&m_lock);
-    if(++m_nObserverNumHandledMktData >= m_nObserverNum)
-    {
-        emit sigReadyToReceiveMktData();
-        m_nObserverNumHandledMktData = 0;
-    }
 }
 
 }

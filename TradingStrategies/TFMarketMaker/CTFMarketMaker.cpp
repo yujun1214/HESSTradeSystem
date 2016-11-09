@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include "Utility/Utilities.h"
 #include <iostream>
+#include "Utility/CLogSys.h"
 
 namespace HESS
 {
@@ -68,12 +69,12 @@ void CTFMarketMaker::handleUpdateMktData(QString _strSecuCode)
         break;
     case SENDEDCANCELLIQUIDATIONORDER:  // 已发出平仓委托撤单请求
         break;
+    case SENDEDSTOPLOSSORDER:   // 已发出止损委托
+        break;
     default:
         break;
     }
 
-    // 发出行情处理完毕signal(for backtest)
-    emit sigHandleMktDataDone();
 } // CTFMarketMaker::handleUpdateMktData
 
 void CTFMarketMaker::handleRtnOrder(CThostFtdcOrderField *_ptrOrder)
@@ -107,6 +108,11 @@ void CTFMarketMaker::handleRtnOrder(CThostFtdcOrderField *_ptrOrder)
         {// 如果当前交易状态 = “已发出平仓委托”，将交易状态改为“建仓完成”，发出“平仓委托被拒绝”signal
             m_eTradingStatus = POSITIONED;
 //            emit sigCloseOrderDenied(_ptrOrder->LimitPrice);
+            emit sigCloseOrderDenied(m_nOrderIndex);
+        }
+        else if(SENDEDSTOPLOSSORDER == m_eTradingStatus)
+        {// 如果当前交易状态 = “已发出止损委托”，将交易状态改为“已发出平仓委托”，发出“平仓委托被拒绝”signal
+            m_eTradingStatus = SENDEDLIQUIDATIONORDER;
             emit sigCloseOrderDenied(m_nOrderIndex);
         }
         break;
@@ -146,7 +152,8 @@ void CTFMarketMaker::handleRtnOrder(CThostFtdcOrderField *_ptrOrder)
         }
         else if(SENDEDCANCELLIQUIDATIONORDER == m_eTradingStatus)
         {// 当前交易状态如果是“已发出平仓委托撤单请求”，那么将交易状态更新为“已发出平仓委托”，并发出止损委托，同时发出“平仓委托撤单完成”signal
-            m_eTradingStatus = SENDEDLIQUIDATIONORDER;
+//            CLogSys::getLogSysInstance()->toConsole("Cancel order done...");
+//            m_eTradingStatus = SENDEDLIQUIDATIONORDER;
             if(LONGTRADING == m_eTradingType)
             {
                 sendMktPriceOrder(THOST_FTDC_D_Sell,THOST_FTDC_OF_Close,1);
@@ -156,6 +163,9 @@ void CTFMarketMaker::handleRtnOrder(CThostFtdcOrderField *_ptrOrder)
                 sendMktPriceOrder(THOST_FTDC_D_Buy,THOST_FTDC_OF_Close,1);
             }
 //            emit sigCloseOrderCanceled(_ptrOrder->LimitPrice);
+//            m_eTradingStatus = SENDEDLIQUIDATIONORDER;
+            // 将交易状态更新为“已发出止损委托”
+            m_eTradingStatus = SENDEDSTOPLOSSORDER;
             emit sigCloseOrderCanceled(m_nOrderIndex);
         }
     case THOST_FTDC_OST_Unknown:    // 未知
@@ -178,6 +188,7 @@ void CTFMarketMaker::handleRtnOrder(CThostFtdcOrderField *_ptrOrder)
 
 void CTFMarketMaker::handleRtnTrade(CThostFtdcTradeField *_ptrTrade)
 {
+//    CLogSys::getLogSysInstance()->toConsole("Returned RtnTrade...");
 //    if(m_nTradeOrderRef != _nOrderRef)
 //        return;
     if(m_nTradeOrderRef != atoi(_ptrTrade->OrderRef))
@@ -219,6 +230,11 @@ void CTFMarketMaker::handleRtnTrade(CThostFtdcTradeField *_ptrTrade)
 //            emit sigLiquidationed(_ptrTrade->Price);
             emit sigLiquidationed(m_nOrderIndex);
         }
+        else if(SENDEDSTOPLOSSORDER == m_eTradingStatus)
+        {// 当前交易状态=“已发出止损委托”，交易状态更新为“空仓”
+            m_eTradingStatus = EMPTYHOLDING;
+            emit sigLiquidationed(m_nOrderIndex);
+        }
     }
 
     delete _ptrTrade;
@@ -258,7 +274,7 @@ void CTFMarketMaker::setFrontSessionID(TThostFtdcFrontIDType _nFrontID, TThostFt
 // 开仓委托
 void CTFMarketMaker::submitOpenPositionOrder()
 {
-    std::cout << "Submit Open Position Order..." << std::endl;
+//    std::cout << "Submit Open Position Order..." << std::endl;
     if(LONGTRADING == m_eTradingType)
     {// long trading type
 //        double fBuyPrice = CDerivativeMktDataBuffer::getMktDataBufferInstPtr()->getDepthMktData(m_strSecuCode).BidPrice[0];
@@ -282,6 +298,7 @@ void CTFMarketMaker::submitOpenPositionOrder()
 // 平仓委托
 void CTFMarketMaker::submitClosePositionOrder()
 {
+//    CLogSys::getLogSysInstance()->toConsole("Submit Close Position Order...");
     if(LONGTRADING == m_eTradingType)
     {// long trading type
 //        double fSellClosePrice = CDerivativeMktDataBuffer::getMktDataBufferInstPtr()->getDepthMktData(m_strSecuCode).AskPrice[0];
@@ -311,6 +328,7 @@ void CTFMarketMaker::submitCancelOrder(int _nOrderRef)
 {
     int nRequestID = CRequestID::getCRequestIDPtr()->getValidRequestID();
     int nOrderActionRef = COrderRef::getCOrderRefPtr()->getValidOrderRef();
+//    CLogSys::getLogSysInstance()->toConsole(QString("Submit Cancel Order..., Curr Trading Status = %1,OrderRef = %2,OrderActionRef = %3,HoldingCost = %4").arg(m_eTradingStatus).arg(_nOrderRef).arg(nOrderActionRef).arg(m_fHoldingCost));
 
     CThostFtdcInputOrderActionField orderActionField;
     memset(&orderActionField,0,sizeof(orderActionField));
@@ -357,6 +375,7 @@ void CTFMarketMaker::handleStoploss()
 
 void CTFMarketMaker::sendLimitOrder(TThostFtdcDirectionType _chDirection, TThostFtdcOffsetFlagType _chOpenClose, int _nVol, double _fPrice) const
 {
+    std::cout << "Sending limit order." << std::endl;
     int nRequestID = CRequestID::getCRequestIDPtr()->getValidRequestID();
     int nOrderRef = COrderRef::getCOrderRefPtr()->getValidOrderRef();
 
@@ -391,6 +410,7 @@ void CTFMarketMaker::sendLimitOrder(TThostFtdcDirectionType _chDirection, TThost
 
 void CTFMarketMaker::sendMktPriceOrder(TThostFtdcDirectionType _chDirection, TThostFtdcOffsetFlagType _chOpenClose, int _nvol) const
 {
+    std::cout << "Sending mkt order." << std::endl;
     int nRequestID = CRequestID::getCRequestIDPtr()->getValidRequestID();
     int nOrderRef = COrderRef::getCOrderRefPtr()->getValidOrderRef();
 
@@ -432,6 +452,7 @@ void CTFMarketMaker::sendMktPriceOrder(TThostFtdcDirectionType _chDirection, TTh
     orderInsert.UserForceClose = 0;
     orderInsert.ContingentCondition = THOST_FTDC_CC_Immediately;
 
+//    CLogSys::getLogSysInstance()->toConsole(QString("Send mkt order, order price = %1").arg(fOrderPrice));
     int ret = m_ptrUserTradeApi->ReqOrderInsert(&orderInsert,nRequestID);
     m_nTradeOrderRef = nOrderRef;
 } // sendMktPriceOrder

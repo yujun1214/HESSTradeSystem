@@ -9,13 +9,7 @@ CONFIG -= app_bundle
 
 TEMPLATE = app
 
-unix {
-INCLUDEPATH += /Users/davidyujun/share/HESSTradeSystem
-}
-
-win32 {
-INCLUDEPATH += D:/share/HESSTradeSystem
-}
+INCLUDEPATH += ../../
 
 SOURCES += main.cpp \
     ../../MarketData/CMktDataBuffer.cpp \

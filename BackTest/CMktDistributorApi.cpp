@@ -23,7 +23,7 @@ int CMktDistributorApi::UnSubscribeMarketData(char *ppInstrumentID[], int nCount
 int CMktDistributorApi::ReqUserLogin(CThostFtdcReqUserLoginField *pReqUserLoginField, int nRequestID)
 {
     emit sigUserLogin(nRequestID);
-    retur n 0;
+    return 0;
 }
 
 int CMktDistributorApi::ReqUserLogout(CThostFtdcUserLogoutField *pUserLogout, int nRequestID)

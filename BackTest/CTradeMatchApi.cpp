@@ -94,7 +94,7 @@ int CTradeMatchApi::ReqSettlementInfoConfirm(CThostFtdcSettlementInfoConfirmFiel
     strcpy(ptrSttlInfoConfirm->ConfirmDate,pSettlementInfoConfirm->ConfirmDate);
     strcpy(ptrSttlInfoConfirm->ConfirmTime,pSettlementInfoConfirm->ConfirmTime);
 
-    emit sigSettlementInfoConfirm(ptrSttlInfoConfirm,nRequestID);
+//    emit sigSettlementInfoConfirm(ptrSttlInfoConfirm,nRequestID);
     return 0;
 }
 
