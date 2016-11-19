@@ -93,7 +93,7 @@ private:
     // 卖出平仓委托价格向量
 //    QVector<int> m_vSellCloseOrderPrice;
     QMap<long,double> m_mpSellCloseOrderPrice;
-    // 卖出委托价格向量
+    // 卖出开仓委托价格向量
 //    QVector<int> m_vSellOrderPrice;
     QMap<long,double> m_mpSellOrderPrice;
     // 买入平仓委托价格向量

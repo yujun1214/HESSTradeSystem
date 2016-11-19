@@ -122,6 +122,31 @@ Create Table StrategyAlloc(
 	tmEndDate	varchar(8)	not null	/* 配置结束日期 */
 );
 
+---------------------------策略回测数据库---------------------
+use StrategyData;
+/* 策略基本信息 */
+Create Table StrategyBasicInfo(
+	StrategyCode	varchar(50)		not null,	/* 策略代码 */
+	StrategyName	varchar(50)		not null,	/* 策略名称 */
+	primary key (StrategyCode)
+);
+
+/* 策略持仓权重表 */
+Create Table StrategyHoldingWeight(
+	tmDate 			varchar(8)		not null,	/* 日期 */
+	StrategyCode	varchar(50)		not null,	/* 策略代码 */
+	SecuCode		varchar(10)		not null,	/* 个股代码 */
+	Weight 			numeric(18,6)	not null,	/* 个股权重 */
+);
+
+/* 策略收益表 */
+Create Table StrategyReturn(
+	tmDate 			varchar(8)		not null,	/* 日期 */
+	StrategyCode 	varchar(50)		not null,	/* 策略代码 */
+	TWR 			numeric(18,6)	not null,	/* 策略TWR */
+	primary key (tmDate,StrategyCode)
+);
+
 
 ---------------------------期权交易相关表--------------------
 use OptionArbitrade;

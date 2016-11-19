@@ -139,7 +139,7 @@ private:
 
     TThostFtdcPasswordType  m_chPassword;
 
-    TThostFtdcRequestIDType m_nRequestID;
+//    TThostFtdcRequestIDType m_nRequestID;
 
     // 登录后会订阅的合约代码list
     QList<QString> m_lstSecuCodes;

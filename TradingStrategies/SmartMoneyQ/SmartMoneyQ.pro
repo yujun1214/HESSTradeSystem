@@ -19,4 +19,5 @@ HEADERS += \
     CSmartMoneyQ.h \
     ../../DataBase/DBInterface.h \
     ../../DataBase/BasicData.h \
-    ../../Utility/CLogSys.h
+    ../../Utility/CLogSys.h \
+    ../../DataBase/StrategyData.h

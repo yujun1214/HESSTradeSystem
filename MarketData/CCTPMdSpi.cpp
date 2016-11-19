@@ -12,7 +12,7 @@
 #include "Utility/cstr.h"
 #include "Utility/Utilities.h"
 #include "Utility/CLogSys.h"
-#include "Utility/COrderRef.h"
+//#include "Utility/COrderRef.h"
 #include "Utility/CRequestID.h"
 
 namespace HESS
@@ -23,7 +23,7 @@ CCTPMdSpi::CCTPMdSpi(CThostFtdcMdApi *pUserApi)
     m_pUserApi = pUserApi;
     memset(m_chUserID,0,sizeof(m_chUserID));
     memset(m_chPassword,0,sizeof(m_chPassword));
-    m_nRequestID = 0;
+//    m_nRequestID = 0;
 }
 
 CCTPMdSpi::~CCTPMdSpi()
@@ -103,7 +103,7 @@ void CCTPMdSpi::OnFrontConnected()
     strcpy(reqUserLoginParam.Password,m_chPassword);
 
     // send the login request
-    m_pUserApi->ReqUserLogin(&reqUserLoginParam,m_nRequestID++);
+    m_pUserApi->ReqUserLogin(&reqUserLoginParam,CRequestID::getCRequestIDPtr()->getValidRequestID());
 }
 
 void CCTPMdSpi::OnFrontDisconnected(int nReason)

@@ -159,12 +159,23 @@ struct TSecuKMktData
     QDate   tmDate;     // 日期
     QTime   tmTime;     // 时间
     QString SecuCode;   // 证券代码
+    double  PrevClose;  // 前收盘价
     double  Open;       // 开盘价
     double  High;       // 最高价
     double  Low;        // 最低价
     double  Close;      // 收盘价
     double  Vol;        // 成交量（股）
     double  Amount;     // 成交金额（元）
+};
+
+/* 策略回测相关数据结构体 */
+// 策略持仓权重
+struct TStrategyHoldingWeight
+{
+    QDate   tmDate;         // 日期
+    QString StrategyCode;   // 策略代码
+    QString SecuCode;       // 个股代码
+    double  fWeight;        // 个股权重
 };
 
 }
