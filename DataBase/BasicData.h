@@ -30,7 +30,7 @@ public:
     }
 
     // 取得证券K线行情数据(指定截止日期和天数，含截止日期)
-    bool getSecuKMktData(QString SecuCode,QDate tmEndDate,int nDays,QVector<TSecuKMktData> &vKMktData);
+    bool getSecuKMktData(KDATATYPE _ktype,QString SecuCode,QDate tmEndDate,int nDays,QVector<TSecuKMktData> &vKMktData);
 
     // 取得当天有行情的个股（A股）代码
     bool getTradingSecuCode(QDate tmDate,QVector<QString> &vSecuCode);

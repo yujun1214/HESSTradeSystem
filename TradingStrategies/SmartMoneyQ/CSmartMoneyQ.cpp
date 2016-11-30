@@ -23,7 +23,7 @@ void CSmartMoneyQ::LoadMktKData(QDate tmCalcDate)
     for(QVector<QString>::const_iterator itcode = vSecuCode.begin();itcode != vSecuCode.end();++itcode)
     {
         vMktData.clear();
-        if(!BasicData::getBasicDataPtr()->getSecuKMktData(*itcode,tmCalcDate,m_nCalcDays,vMktData))
+        if(!BasicData::getBasicDataPtr()->getSecuKMktData(KDATA_1M,*itcode,tmCalcDate,m_nCalcDays,vMktData))
         {
             CLogSys::getLogSysInstance()->toConsole(QString("Could not get 1m quotation data of %1.").arg(*itcode));
             continue;

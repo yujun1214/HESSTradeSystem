@@ -102,18 +102,30 @@ void CTFMarketMaker::handleRtnOrder(CThostFtdcOrderField *_ptrOrder)
         {// 如果当前交易状态 = “已发出建仓委托”，将交易状态改为“空仓”，发出“开仓委托被拒绝”signal
             m_eTradingStatus = EMPTYHOLDING;
 //            emit sigOpenOrderDenied(_ptrOrder->LimitPrice);
-            emit sigOpenOrderDenied(m_nOrderIndex);
+//            emit sigOpenOrderDenied(m_nOrderIndex);
+            if(LONGTRADING == m_eTradingType)
+                m_ptrMMDispatcher->deleteBuyOrderPrice(m_nOrderIndex);
+            else if(SHORTTRADING == m_eTradingType)
+                m_ptrMMDispatcher->deleteSellOrderPrice(m_nOrderIndex);
         }
         else if(SENDEDLIQUIDATIONORDER == m_eTradingStatus)
         {// 如果当前交易状态 = “已发出平仓委托”，将交易状态改为“建仓完成”，发出“平仓委托被拒绝”signal
             m_eTradingStatus = POSITIONED;
 //            emit sigCloseOrderDenied(_ptrOrder->LimitPrice);
-            emit sigCloseOrderDenied(m_nOrderIndex);
+//            emit sigCloseOrderDenied(m_nOrderIndex);
+            if(LONGTRADING == m_eTradingType)
+                m_ptrMMDispatcher->deleteSellCloseOrderPrice(m_nOrderIndex);
+            else if(SHORTTRADING == m_eTradingType)
+                m_ptrMMDispatcher->deleteBuyCloseOrderPrice(m_nOrderIndex);
         }
         else if(SENDEDSTOPLOSSORDER == m_eTradingStatus)
         {// 如果当前交易状态 = “已发出止损委托”，将交易状态改为“已发出平仓委托”，发出“平仓委托被拒绝”signal
             m_eTradingStatus = SENDEDLIQUIDATIONORDER;
-            emit sigCloseOrderDenied(m_nOrderIndex);
+//            emit sigCloseOrderDenied(m_nOrderIndex);
+            if(LONGTRADING == m_eTradingType)
+                m_ptrMMDispatcher->deleteSellCloseOrderPrice(m_nOrderIndex);
+            else if(SHORTTRADING == m_eTradingType)
+                m_ptrMMDispatcher->deleteBuyCloseOrderPrice(m_nOrderIndex);
         }
         break;
     case THOST_FTDC_OSS_CancelRejected:     // 撤单已经被拒绝
@@ -148,7 +160,11 @@ void CTFMarketMaker::handleRtnOrder(CThostFtdcOrderField *_ptrOrder)
         {// 当前交易状态如果是“已发出建仓委托撤单请求”，那么将交易状态更新为“空仓”，发出“开仓委托撤单完成”signal
             m_eTradingStatus = EMPTYHOLDING;
 //            emit sigOpenOrderCanceled(_ptrOrder->LimitPrice);
-            emit sigOpenOrderCanceled(m_nOrderIndex);
+//            emit sigOpenOrderCanceled(m_nOrderIndex);
+            if(LONGTRADING == m_eTradingType)
+                m_ptrMMDispatcher->deleteBuyOrderPrice(m_nOrderIndex);
+            else if(SHORTTRADING == m_eTradingType)
+                m_ptrMMDispatcher->deleteSellOrderPrice(m_nOrderIndex);
         }
         else if(SENDEDCANCELLIQUIDATIONORDER == m_eTradingStatus)
         {// 当前交易状态如果是“已发出平仓委托撤单请求”，那么将交易状态更新为“已发出平仓委托”，并发出止损委托，同时发出“平仓委托撤单完成”signal
@@ -166,7 +182,11 @@ void CTFMarketMaker::handleRtnOrder(CThostFtdcOrderField *_ptrOrder)
 //            m_eTradingStatus = SENDEDLIQUIDATIONORDER;
             // 将交易状态更新为“已发出止损委托”
             m_eTradingStatus = SENDEDSTOPLOSSORDER;
-            emit sigCloseOrderCanceled(m_nOrderIndex);
+//            emit sigCloseOrderCanceled(m_nOrderIndex);
+            if(LONGTRADING == m_eTradingType)
+                m_ptrMMDispatcher->deleteSellCloseOrderPrice(m_nOrderIndex);
+            else if(SHORTTRADING == m_eTradingType)
+                m_ptrMMDispatcher->deleteBuyCloseOrderPrice(m_nOrderIndex);
         }
     case THOST_FTDC_OST_Unknown:    // 未知
         // 不做处理
@@ -203,7 +223,11 @@ void CTFMarketMaker::handleRtnTrade(CThostFtdcTradeField *_ptrTrade)
             m_eTradingStatus = POSITIONED;
             m_fHoldingCost = _ptrTrade->Price;
 //            emit sigPositioned(_ptrTrade->Price);
-            emit sigPositioned(m_nOrderIndex);
+//            emit sigPositioned(m_nOrderIndex);
+            if(LONGTRADING == m_eTradingType)
+                m_ptrMMDispatcher->deleteBuyOrderPrice(m_nOrderIndex);
+            else if(SHORTTRADING == m_eTradingType)
+                m_ptrMMDispatcher->deleteSellOrderPrice(m_nOrderIndex);
         }
         else if(SENDEDCANCELPOSITIONORDER == m_eTradingStatus)
         {// 当前交易状态=“已发出建仓委托撤单请求”，即建仓委托撤单order到达市场时该建仓order已经成交，更新交易状态为“建仓完成”，记录holding cost
@@ -211,7 +235,11 @@ void CTFMarketMaker::handleRtnTrade(CThostFtdcTradeField *_ptrTrade)
             m_fHoldingCost = _ptrTrade->Price;
             // 发出“开仓完成”signal
 //            emit sigPositioned(_ptrTrade->Price);
-            emit sigPositioned(m_nOrderIndex);
+//            emit sigPositioned(m_nOrderIndex);
+            if(LONGTRADING == m_eTradingType)
+                m_ptrMMDispatcher->deleteBuyOrderPrice(m_nOrderIndex);
+            else if(SHORTTRADING == m_eTradingType)
+                m_ptrMMDispatcher->deleteSellOrderPrice(m_nOrderIndex);
         }
     }
     else if(_ptrTrade->OffsetFlag == THOST_FTDC_OF_Close)
@@ -221,19 +249,31 @@ void CTFMarketMaker::handleRtnTrade(CThostFtdcTradeField *_ptrTrade)
             m_eTradingStatus = EMPTYHOLDING;
             // 发出“平仓完成”signal
 //            emit sigLiquidationed(_ptrTrade->Price);
-            emit sigLiquidationed(m_nOrderIndex);
+//            emit sigLiquidationed(m_nOrderIndex);
+            if(LONGTRADING == m_eTradingType)
+                m_ptrMMDispatcher->deleteSellCloseOrderPrice(m_nOrderIndex);
+            else if(SHORTTRADING == m_eTradingType)
+                m_ptrMMDispatcher->deleteBuyCloseOrderPrice(m_nOrderIndex);
         }
         else if(SENDEDCANCELLIQUIDATIONORDER == m_eTradingStatus)
         {// 当前交易状态=“已发出平仓委托撤单请求”，即平仓委托撤单order到达市场时该平仓order已经成交，更新交易状态为“空仓”
             m_eTradingStatus = EMPTYHOLDING;
             // 发出“平仓完成”signal
 //            emit sigLiquidationed(_ptrTrade->Price);
-            emit sigLiquidationed(m_nOrderIndex);
+//            emit sigLiquidationed(m_nOrderIndex);
+            if(LONGTRADING == m_eTradingType)
+                m_ptrMMDispatcher->deleteSellCloseOrderPrice(m_nOrderIndex);
+            else if(SHORTTRADING == m_eTradingType)
+                m_ptrMMDispatcher->deleteBuyCloseOrderPrice(m_nOrderIndex);
         }
         else if(SENDEDSTOPLOSSORDER == m_eTradingStatus)
         {// 当前交易状态=“已发出止损委托”，交易状态更新为“空仓”
             m_eTradingStatus = EMPTYHOLDING;
-            emit sigLiquidationed(m_nOrderIndex);
+//            emit sigLiquidationed(m_nOrderIndex);
+            if(LONGTRADING == m_eTradingType)
+                m_ptrMMDispatcher->deleteSellCloseOrderPrice(m_nOrderIndex);
+            else if(SHORTTRADING == m_eTradingType)
+                m_ptrMMDispatcher->deleteBuyCloseOrderPrice(m_nOrderIndex);
         }
     }
 

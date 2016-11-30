@@ -25,7 +25,8 @@ SOURCES += main.cpp \
     ../../Utility/CLogSys.cpp \
     CTFMMController.cpp \
     ../../BackTest/CMktDistributorApi.cpp \
-    ../../BackTest/CTradeMatchApi.cpp
+    ../../BackTest/CTradeMatchApi.cpp \
+    ../../BackTest/CTFMMBackTest.cpp
 
 HEADERS += \
     CTFMarketMaker.h \
@@ -47,7 +48,8 @@ HEADERS += \
     ../../Utility/Utilities.h \
     ../../CTP/inc/thostftdcuserapidatatype.h \
     ../../BackTest/CMktDistributorApi.h \
-    ../../BackTest/CTradeMatchApi.h
+    ../../BackTest/CTradeMatchApi.h \
+    ../../BackTest/CTFMMBackTest.h
 
 LIBS += -LD:/share/HESSTradeSystem/CTP/lib -lthosttraderapi
 LIBS += -LD:/share/HESSTradeSystem/CTP/lib -lthostmduserapi

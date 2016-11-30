@@ -311,7 +311,7 @@ Create Table SecuSuspendInfo(
 
 -- 沪深交易所证券日行情数据(SecuQuotationData)
 Create Table SecuQuotationData(
-	tmDate			varchar(8)		not null,	/* 日期 */
+	tmDate			varchar(8)		not null,	/* 日期(yyyymmdd) */
 	SecuCode		varchar(10)		not null,	/* 证券代码 */
 	Exchange		varchar(20)		not null,	/* 交易所 */
 	PrevClose		decimal(20,4)	not null,	/* 前收盘价 */
@@ -326,7 +326,7 @@ Create Table SecuQuotationData(
 
 -- 沪深交易所日复权行情数据(SecuRestorationQuotationData)
 Create Table SecuRestorationQuotationData(
-	tmDate			varchar(8)		not null,	/* 日期 */
+	tmDate			varchar(8)		not null,	/* 日期(yyyymmdd) */
 	SecuCode		varchar(10)		not null,	/* 证券代码 */
 	Exchange		varchar(20)		not null,	/* 交易所 */
 	PrevClose		decimal(20,4)	not null,	/* 复权前收盘价 */
